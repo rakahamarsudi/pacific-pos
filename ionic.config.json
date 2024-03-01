@@ -1,0 +1,7 @@
+{
+  "name": "pacific-pos",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "vue-vite"
+}
