@@ -23,10 +23,42 @@ import '@ionic/vue/css/display.css';
 /* Theme variables */
 import './theme/variables.css';
 
+///
+import {Capacitor} from "@capacitor/core"
+import {
+  CapacitorSQLite,
+  SQLiteConnection,
+  SQLiteDBConnection
+} from "@capacitor-community/sqlite";
+import {JeepSqlite} from "jeep-sqlite/dist/components/jeep-sqlite"
+
+customElements.define("jeep-sqlite", JeepSqlite);
+
 const app = createApp(App)
   .use(IonicVue)
   .use(router);
-  
-router.isReady().then(() => {
-  app.mount('#app');
-});
+
+window.addEventListener("DOMContentLoaded", async() => {
+  try{
+    const platform = Capacitor.getPlatform();
+    const sqlite = new SQLiteConnection(CapacitorSQLite);
+
+
+    if(platform === "web"){
+      const jeepSqliteEl = document.createElement("jeep-sqlite");
+      document.body.appendChild(jeepSqliteEl);
+      await customElements.whenDefined("jeep-sqlite");
+      console.log("after customElements.whenDefined")
+
+      await sqlite.initWebStore();
+      console.log("after initWebstore")
+    }
+
+    const app = createApp(App).use(IonicVue).use(router);
+    router.isReady().then(() => {
+      app.mount("#app");
+    });
+  }catch (e) {
+    console.log((e as any).message);
+  }
+})
